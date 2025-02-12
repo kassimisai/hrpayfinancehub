@@ -56,12 +56,16 @@ export function AddEmployeeDialog() {
 
   const onSubmit = async (data: EmployeeFormValues) => {
     try {
-      // First, check if email already exists
-      const { data: existingEmployee } = await supabase
+      // First, check if email already exists using maybeSingle() instead of single()
+      const { data: existingEmployee, error: checkError } = await supabase
         .from('employees')
         .select('id')
         .eq('email', data.email)
-        .single();
+        .maybeSingle();
+
+      if (checkError) {
+        throw checkError;
+      }
 
       if (existingEmployee) {
         toast({
@@ -72,7 +76,7 @@ export function AddEmployeeDialog() {
         return;
       }
 
-      const { error } = await supabase
+      const { error: insertError } = await supabase
         .from('employees')
         .insert({
           first_name: data.first_name,
@@ -86,7 +90,7 @@ export function AddEmployeeDialog() {
           hire_date: data.hire_date,
         });
 
-      if (error) throw error;
+      if (insertError) throw insertError;
 
       toast({
         title: "Success",
