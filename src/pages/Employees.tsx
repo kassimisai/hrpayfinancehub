@@ -22,6 +22,7 @@ import {
   BadgeProps,
 } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { useAuth } from "@/contexts/AuthContext";
 
 const getStatusColor = (status: string): BadgeProps["variant"] => {
   switch (status) {
@@ -39,10 +40,12 @@ const getStatusColor = (status: string): BadgeProps["variant"] => {
 const EmployeesPage = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const { toast } = useToast();
+  const { user, userRole } = useAuth();
 
   const { data: employees, isLoading, error } = useQuery({
     queryKey: ['employees'],
     queryFn: async () => {
+      console.log('Fetching employees with user role:', userRole);
       const { data, error } = await supabase
         .from('employees')
         .select(`
