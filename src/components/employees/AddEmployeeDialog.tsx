@@ -56,6 +56,22 @@ export function AddEmployeeDialog() {
 
   const onSubmit = async (data: EmployeeFormValues) => {
     try {
+      // First, check if email already exists
+      const { data: existingEmployee } = await supabase
+        .from('employees')
+        .select('id')
+        .eq('email', data.email)
+        .single();
+
+      if (existingEmployee) {
+        toast({
+          title: "Error",
+          description: "An employee with this email already exists",
+          variant: "destructive",
+        });
+        return;
+      }
+
       const { error } = await supabase
         .from('employees')
         .insert({
