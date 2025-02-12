@@ -9,6 +9,449 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      departments: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          id: string
+          manager_id: string | null
+          name: string
+          organization_id: string | null
+          parent_department_id: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          manager_id?: string | null
+          name: string
+          organization_id?: string | null
+          parent_department_id?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          manager_id?: string | null
+          name?: string
+          organization_id?: string | null
+          parent_department_id?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "departments_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "departments_parent_department_id_fkey"
+            columns: ["parent_department_id"]
+            isOneToOne: false
+            referencedRelation: "departments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      employee_benefits: {
+        Row: {
+          benefit_type: string
+          coverage_end_date: string | null
+          coverage_start_date: string
+          created_at: string | null
+          employee_id: string | null
+          id: string
+          policy_number: string | null
+          provider: string | null
+          status: string
+          updated_at: string | null
+        }
+        Insert: {
+          benefit_type: string
+          coverage_end_date?: string | null
+          coverage_start_date: string
+          created_at?: string | null
+          employee_id?: string | null
+          id?: string
+          policy_number?: string | null
+          provider?: string | null
+          status?: string
+          updated_at?: string | null
+        }
+        Update: {
+          benefit_type?: string
+          coverage_end_date?: string | null
+          coverage_start_date?: string
+          created_at?: string | null
+          employee_id?: string | null
+          id?: string
+          policy_number?: string | null
+          provider?: string | null
+          status?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "employee_benefits_employee_id_fkey"
+            columns: ["employee_id"]
+            isOneToOne: false
+            referencedRelation: "employees"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      employee_documents: {
+        Row: {
+          created_at: string | null
+          document_name: string
+          document_type: string
+          employee_id: string | null
+          file_path: string
+          id: string
+          updated_at: string | null
+          uploaded_by: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          document_name: string
+          document_type: string
+          employee_id?: string | null
+          file_path: string
+          id?: string
+          updated_at?: string | null
+          uploaded_by?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          document_name?: string
+          document_type?: string
+          employee_id?: string | null
+          file_path?: string
+          id?: string
+          updated_at?: string | null
+          uploaded_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "employee_documents_employee_id_fkey"
+            columns: ["employee_id"]
+            isOneToOne: false
+            referencedRelation: "employees"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "employee_documents_uploaded_by_fkey"
+            columns: ["uploaded_by"]
+            isOneToOne: false
+            referencedRelation: "employees"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      employees: {
+        Row: {
+          created_at: string | null
+          date_of_birth: string | null
+          department_id: string | null
+          email: string
+          emergency_contact_name: string | null
+          emergency_contact_phone: string | null
+          employee_type: string
+          employment_status: string
+          first_name: string
+          hire_date: string
+          id: string
+          job_title: string
+          last_name: string
+          manager_id: string | null
+          organization_id: string | null
+          phone: string | null
+          salary_amount: number | null
+          salary_currency: string | null
+          tax_id: string | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          date_of_birth?: string | null
+          department_id?: string | null
+          email: string
+          emergency_contact_name?: string | null
+          emergency_contact_phone?: string | null
+          employee_type?: string
+          employment_status?: string
+          first_name: string
+          hire_date: string
+          id?: string
+          job_title: string
+          last_name: string
+          manager_id?: string | null
+          organization_id?: string | null
+          phone?: string | null
+          salary_amount?: number | null
+          salary_currency?: string | null
+          tax_id?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          date_of_birth?: string | null
+          department_id?: string | null
+          email?: string
+          emergency_contact_name?: string | null
+          emergency_contact_phone?: string | null
+          employee_type?: string
+          employment_status?: string
+          first_name?: string
+          hire_date?: string
+          id?: string
+          job_title?: string
+          last_name?: string
+          manager_id?: string | null
+          organization_id?: string | null
+          phone?: string | null
+          salary_amount?: number | null
+          salary_currency?: string | null
+          tax_id?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "employees_department_id_fkey"
+            columns: ["department_id"]
+            isOneToOne: false
+            referencedRelation: "departments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "employees_manager_id_fkey"
+            columns: ["manager_id"]
+            isOneToOne: false
+            referencedRelation: "employees"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "employees_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      organizations: {
+        Row: {
+          address: string | null
+          city: string | null
+          contact_email: string | null
+          country: string | null
+          created_at: string | null
+          id: string
+          name: string
+          tax_id: string | null
+          updated_at: string | null
+          website: string | null
+        }
+        Insert: {
+          address?: string | null
+          city?: string | null
+          contact_email?: string | null
+          country?: string | null
+          created_at?: string | null
+          id?: string
+          name: string
+          tax_id?: string | null
+          updated_at?: string | null
+          website?: string | null
+        }
+        Update: {
+          address?: string | null
+          city?: string | null
+          contact_email?: string | null
+          country?: string | null
+          created_at?: string | null
+          id?: string
+          name?: string
+          tax_id?: string | null
+          updated_at?: string | null
+          website?: string | null
+        }
+        Relationships: []
+      }
+      payroll_records: {
+        Row: {
+          base_salary: number
+          bonus: number | null
+          created_at: string | null
+          deductions: number | null
+          employee_id: string | null
+          id: string
+          net_pay: number
+          overtime_pay: number | null
+          pay_period_end: string
+          pay_period_start: string
+          payment_date: string | null
+          payment_status: string
+          tax_withholding: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          base_salary: number
+          bonus?: number | null
+          created_at?: string | null
+          deductions?: number | null
+          employee_id?: string | null
+          id?: string
+          net_pay: number
+          overtime_pay?: number | null
+          pay_period_end: string
+          pay_period_start: string
+          payment_date?: string | null
+          payment_status?: string
+          tax_withholding?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          base_salary?: number
+          bonus?: number | null
+          created_at?: string | null
+          deductions?: number | null
+          employee_id?: string | null
+          id?: string
+          net_pay?: number
+          overtime_pay?: number | null
+          pay_period_end?: string
+          pay_period_start?: string
+          payment_date?: string | null
+          payment_status?: string
+          tax_withholding?: number | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payroll_records_employee_id_fkey"
+            columns: ["employee_id"]
+            isOneToOne: false
+            referencedRelation: "employees"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      performance_reviews: {
+        Row: {
+          comments: string | null
+          created_at: string | null
+          employee_id: string | null
+          id: string
+          overall_rating: number | null
+          review_period_end: string
+          review_period_start: string
+          reviewer_id: string | null
+          status: string
+          updated_at: string | null
+        }
+        Insert: {
+          comments?: string | null
+          created_at?: string | null
+          employee_id?: string | null
+          id?: string
+          overall_rating?: number | null
+          review_period_end: string
+          review_period_start: string
+          reviewer_id?: string | null
+          status?: string
+          updated_at?: string | null
+        }
+        Update: {
+          comments?: string | null
+          created_at?: string | null
+          employee_id?: string | null
+          id?: string
+          overall_rating?: number | null
+          review_period_end?: string
+          review_period_start?: string
+          reviewer_id?: string | null
+          status?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "performance_reviews_employee_id_fkey"
+            columns: ["employee_id"]
+            isOneToOne: false
+            referencedRelation: "employees"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "performance_reviews_reviewer_id_fkey"
+            columns: ["reviewer_id"]
+            isOneToOne: false
+            referencedRelation: "employees"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      time_off_requests: {
+        Row: {
+          approved_by: string | null
+          created_at: string | null
+          employee_id: string | null
+          end_date: string
+          id: string
+          reason: string | null
+          request_type: string
+          start_date: string
+          status: string
+          updated_at: string | null
+        }
+        Insert: {
+          approved_by?: string | null
+          created_at?: string | null
+          employee_id?: string | null
+          end_date: string
+          id?: string
+          reason?: string | null
+          request_type: string
+          start_date: string
+          status?: string
+          updated_at?: string | null
+        }
+        Update: {
+          approved_by?: string | null
+          created_at?: string | null
+          employee_id?: string | null
+          end_date?: string
+          id?: string
+          reason?: string | null
+          request_type?: string
+          start_date?: string
+          status?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "time_off_requests_approved_by_fkey"
+            columns: ["approved_by"]
+            isOneToOne: false
+            referencedRelation: "employees"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "time_off_requests_employee_id_fkey"
+            columns: ["employee_id"]
+            isOneToOne: false
+            referencedRelation: "employees"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       trading_signals: {
         Row: {
           analysis_text: string
