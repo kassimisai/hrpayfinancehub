@@ -30,7 +30,7 @@ const App = () => (
             <Route
               path="/"
               element={
-                <ProtectedRoute requiredPermissions={['view_dashboard']}>
+                <ProtectedRoute>
                   <Layout>
                     <Index />
                   </Layout>
@@ -40,7 +40,7 @@ const App = () => (
             <Route
               path="/employees"
               element={
-                <ProtectedRoute requiredPermissions={['view_employees', 'manage_employees']}>
+                <ProtectedRoute requiredRole="HR">
                   <Layout>
                     <EmployeesPage />
                   </Layout>
@@ -50,7 +50,7 @@ const App = () => (
             <Route
               path="/time-off"
               element={
-                <ProtectedRoute requiredPermissions={['manage_time_off']}>
+                <ProtectedRoute>
                   <Layout>
                     <TimeOffPage />
                   </Layout>
@@ -60,7 +60,7 @@ const App = () => (
             <Route
               path="/reports"
               element={
-                <ProtectedRoute requiredPermissions={['view_reports']}>
+                <ProtectedRoute requiredRole="HR">
                   <Layout>
                     <ReportsPage />
                   </Layout>
@@ -70,7 +70,7 @@ const App = () => (
             <Route
               path="/settings"
               element={
-                <ProtectedRoute requiredPermissions={['manage_settings']}>
+                <ProtectedRoute requiredRole="ADMIN">
                   <Layout>
                     <SettingsPage />
                   </Layout>
