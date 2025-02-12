@@ -40,7 +40,7 @@ const App = () => (
             <Route
               path="/employees"
               element={
-                <ProtectedRoute requiredPermissions={['manage_employees']}>
+                <ProtectedRoute requiredPermissions={['view_employees', 'manage_employees']}>
                   <Layout>
                     <EmployeesPage />
                   </Layout>
