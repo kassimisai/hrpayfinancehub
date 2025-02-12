@@ -755,8 +755,16 @@ export type Database = {
           permission_name: string
         }[]
       }
+      has_role: {
+        Args: {
+          user_id: string
+          role: Database["public"]["Enums"]["app_role"]
+        }
+        Returns: boolean
+      }
     }
     Enums: {
+      app_role: "admin" | "manager" | "employee"
       user_role: "ADMIN" | "HR" | "MANAGER" | "EMPLOYEE"
     }
     CompositeTypes: {
