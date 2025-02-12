@@ -779,6 +779,10 @@ export type Database = {
       }
     }
     Functions: {
+      check_hr_admin_access: {
+        Args: Record<PropertyKey, never>
+        Returns: boolean
+      }
       get_user_permissions: {
         Args: {
           user_id: string
