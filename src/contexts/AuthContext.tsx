@@ -1,3 +1,4 @@
+
 import { createContext, useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -26,25 +27,40 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const fetchUserRoleAndPermissions = async (userId: string) => {
     try {
-      const { data: roleData } = await supabase
+      console.log('Fetching user role and permissions for user:', userId);
+      
+      const { data: roleData, error: roleError } = await supabase
         .from('user_roles')
         .select('role')
         .eq('user_id', userId)
         .maybeSingle();
 
-      setUserRole(roleData?.role || 'employee');
+      if (roleError) {
+        console.error('Error fetching user role:', roleError);
+      }
 
-      const { data: permissionsData } = await supabase
+      console.log('Role data:', roleData);
+      setUserRole(roleData?.role || 'EMPLOYEE');
+
+      const { data: permissionsData, error: permError } = await supabase
         .rpc('get_user_permissions', { user_id: userId });
 
+      if (permError) {
+        console.error('Error fetching permissions:', permError);
+      }
+
+      console.log('Permissions data:', permissionsData);
       if (permissionsData) {
-        setPermissions(permissionsData.map((p: { permission_name: string }) => p.permission_name));
+        const perms = permissionsData.map((p: { permission_name: string }) => p.permission_name);
+        console.log('Setting permissions:', perms);
+        setPermissions(perms);
       } else {
+        console.log('No permissions found, setting empty array');
         setPermissions([]);
       }
     } catch (error) {
-      console.error('Error fetching user role and permissions:', error);
-      setUserRole('employee');
+      console.error('Error in fetchUserRoleAndPermissions:', error);
+      setUserRole('EMPLOYEE');
       setPermissions([]);
     }
   };

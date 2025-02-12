@@ -21,13 +21,23 @@ export function ProtectedRoute({
 
   useEffect(() => {
     if (!loading) {
+      console.log('ProtectedRoute check:', {
+        user,
+        userRole,
+        permissions,
+        requiredPermissions,
+        requiredRole
+      });
+
       if (!user) {
+        console.log('No user found, redirecting to auth');
         navigate("/auth");
         return;
       }
 
       // Check role if required
       if (requiredRole && userRole !== requiredRole) {
+        console.log(`Role mismatch. Required: ${requiredRole}, User has: ${userRole}`);
         toast({
           title: "Access Denied",
           description: "You don't have the required role to access this page.",
@@ -43,6 +53,12 @@ export function ProtectedRoute({
           permission => permissions.includes(permission)
         );
         
+        console.log('Permission check:', {
+          required: requiredPermissions,
+          userHas: permissions,
+          hasAll: hasAllPermissions
+        });
+
         if (!hasAllPermissions) {
           toast({
             title: "Access Denied",
