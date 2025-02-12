@@ -244,6 +244,13 @@ export type Database = {
             referencedRelation: "organizations"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "employees_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "user_management"
+            referencedColumns: ["id"]
+          },
         ]
       }
       organizations: {
@@ -740,11 +747,36 @@ export type Database = {
           updated_at?: string
           user_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "user_roles_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "user_management"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
-      [_ in never]: never
+      user_management: {
+        Row: {
+          email: string | null
+          id: string | null
+          is_admin: boolean | null
+        }
+        Insert: {
+          email?: string | null
+          id?: string | null
+          is_admin?: never
+        }
+        Update: {
+          email?: string | null
+          id?: string | null
+          is_admin?: never
+        }
+        Relationships: []
+      }
     }
     Functions: {
       get_user_permissions: {
@@ -765,6 +797,12 @@ export type Database = {
         Args: {
           user_id: string
           role: Database["public"]["Enums"]["app_role"]
+        }
+        Returns: boolean
+      }
+      toggle_admin_role: {
+        Args: {
+          target_user_id: string
         }
         Returns: boolean
       }

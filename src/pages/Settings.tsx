@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { SecuritySettings } from "@/components/settings/SecuritySettings";
 
 const SettingsPage = () => {
   return (
@@ -69,6 +70,10 @@ const SettingsPage = () => {
                 </Button>
               </div>
             </div>
+          </TabsContent>
+
+          <TabsContent value="security" className="mt-6">
+            <SecuritySettings />
           </TabsContent>
         </ScrollArea>
       </Tabs>
