@@ -1,5 +1,6 @@
+
 import { useState } from "react";
-import { Users, UserPlus, Search, Filter, Loader2 } from "lucide-react";
+import { Search, Filter, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -7,6 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import type { Employee } from "@/types/employee";
+import { AddEmployeeDialog } from "@/components/employees/AddEmployeeDialog";
 import {
   Table,
   TableBody,
@@ -79,10 +81,7 @@ const EmployeesPage = () => {
           <h1 className="text-2xl font-semibold text-secondary">Employees</h1>
           <p className="text-muted-foreground">Manage your organization's employees</p>
         </div>
-        <Button>
-          <UserPlus className="mr-2 h-4 w-4" />
-          Add Employee
-        </Button>
+        <AddEmployeeDialog />
       </div>
 
       <div className="flex gap-4 items-center">
