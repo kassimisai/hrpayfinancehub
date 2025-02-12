@@ -755,6 +755,12 @@ export type Database = {
           permission_name: string
         }[]
       }
+      has_hr_permissions: {
+        Args: {
+          lookup_user_id: string
+        }
+        Returns: boolean
+      }
       has_role: {
         Args: {
           user_id: string
