@@ -43,9 +43,14 @@ const EmployeesPage = () => {
   const { user, userRole } = useAuth();
 
   const { data: employees, isLoading, error } = useQuery({
-    queryKey: ['employees'],
+    queryKey: ['employees', userRole],
     queryFn: async () => {
       console.log('Fetching employees with user role:', userRole);
+      
+      if (!user) {
+        throw new Error('You must be logged in to view employees data');
+      }
+
       const { data, error } = await supabase
         .from('employees')
         .select(`
@@ -57,11 +62,19 @@ const EmployeesPage = () => {
 
       if (error) {
         console.error('Error fetching employees:', error);
-        throw new Error('You don\'t have permission to view employees data');
+        if (error.code === 'PGRST116') {
+          throw new Error('You don\'t have permission to view employees data');
+        }
+        throw new Error(error.message);
+      }
+
+      if (!data) {
+        return [];
       }
 
       return data as (Employee & { departments: { name: string } | null })[];
     },
+    enabled: !!user, // Only run query if user is logged in
   });
 
   const filteredEmployees = employees?.filter((employee) => {
