@@ -59,51 +59,6 @@ export function AddEmployeeDialog() {
 
   const onSubmit = async (data: EmployeeFormValues) => {
     try {
-      // First check if the current user has HR permissions
-      const { data: hasHRPerms, error: permsError } = await supabase
-        .rpc('has_hr_permissions', {
-          lookup_user_id: user?.id
-        });
-
-      if (permsError) {
-        console.error('Error checking HR permissions:', permsError);
-        toast({
-          title: "Error",
-          description: "Failed to verify permissions",
-          variant: "destructive",
-        });
-        return;
-      }
-
-      if (!hasHRPerms) {
-        toast({
-          title: "Access Denied",
-          description: "You need HR permissions to add employees",
-          variant: "destructive",
-        });
-        return;
-      }
-
-      // Check if email already exists
-      const { data: existingEmployee, error: checkError } = await supabase
-        .from('employees')
-        .select('id')
-        .eq('email', data.email)
-        .maybeSingle();
-
-      if (checkError) {
-        throw checkError;
-      }
-
-      if (existingEmployee) {
-        toast({
-          title: "Error",
-          description: "An employee with this email already exists",
-          variant: "destructive",
-        });
-        return;
-      }
-
       const { error: insertError } = await supabase
         .from('employees')
         .insert({
@@ -118,7 +73,18 @@ export function AddEmployeeDialog() {
           hire_date: data.hire_date,
         });
 
-      if (insertError) throw insertError;
+      if (insertError) {
+        // Handle duplicate email error specifically
+        if (insertError.code === '23505') { // Unique violation error code
+          toast({
+            title: "Error",
+            description: "An employee with this email already exists",
+            variant: "destructive",
+          });
+          return;
+        }
+        throw insertError;
+      }
 
       toast({
         title: "Success",
@@ -129,6 +95,7 @@ export function AddEmployeeDialog() {
       setOpen(false);
       form.reset();
     } catch (error: any) {
+      console.error('Error adding employee:', error);
       toast({
         title: "Error",
         description: error.message,
