@@ -2,6 +2,7 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
+import { useToast } from "@/hooks/use-toast";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -16,6 +17,7 @@ export function ProtectedRoute({
 }: ProtectedRouteProps) {
   const { user, loading, userRole, permissions } = useAuth();
   const navigate = useNavigate();
+  const { toast } = useToast();
 
   useEffect(() => {
     if (!loading) {
@@ -52,7 +54,7 @@ export function ProtectedRoute({
         }
       }
     }
-  }, [user, loading, userRole, permissions, requiredRole, requiredPermissions, navigate]);
+  }, [user, loading, userRole, permissions, requiredRole, requiredPermissions, navigate, toast]);
 
   if (loading) {
     return <div className="min-h-screen flex items-center justify-center">Loading...</div>;

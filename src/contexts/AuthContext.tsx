@@ -1,4 +1,3 @@
-
 import { createContext, useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -27,31 +26,30 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const fetchUserRoleAndPermissions = async (userId: string) => {
     try {
-      // Fetch user role
       const { data: roleData } = await supabase
         .from('user_roles')
         .select('role')
         .eq('user_id', userId)
-        .single();
+        .maybeSingle();
 
-      if (roleData) {
-        setUserRole(roleData.role);
-      }
+      setUserRole(roleData?.role || 'employee');
 
-      // Fetch user permissions
       const { data: permissionsData } = await supabase
         .rpc('get_user_permissions', { user_id: userId });
 
       if (permissionsData) {
         setPermissions(permissionsData.map((p: { permission_name: string }) => p.permission_name));
+      } else {
+        setPermissions([]);
       }
     } catch (error) {
       console.error('Error fetching user role and permissions:', error);
+      setUserRole('employee');
+      setPermissions([]);
     }
   };
 
   useEffect(() => {
-    // Check active sessions and sets the user
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null);
       if (session?.user) {
@@ -60,7 +58,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setLoading(false);
     });
 
-    // Listen for changes on auth state
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
       if (session?.user) {
