@@ -1,6 +1,6 @@
 
 import { useState } from "react";
-import { Search, Filter, Loader2 } from "lucide-react";
+import { Search, Filter, Loader2, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -21,6 +21,7 @@ import {
   Badge,
   BadgeProps,
 } from "@/components/ui/badge";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 const getStatusColor = (status: string): BadgeProps["variant"] => {
   switch (status) {
@@ -39,7 +40,7 @@ const EmployeesPage = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const { toast } = useToast();
 
-  const { data: employees, isLoading } = useQuery({
+  const { data: employees, isLoading, error } = useQuery({
     queryKey: ['employees'],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -52,11 +53,7 @@ const EmployeesPage = () => {
         `);
 
       if (error) {
-        toast({
-          title: "Error fetching employees",
-          description: error.message,
-          variant: "destructive",
-        });
+        console.error('Error fetching employees:', error);
         throw error;
       }
 
@@ -73,6 +70,19 @@ const EmployeesPage = () => {
       employee.job_title.toLowerCase().includes(searchTerm)
     );
   });
+
+  if (error) {
+    return (
+      <div className="p-6">
+        <Alert variant="destructive">
+          <AlertTriangle className="h-4 w-4" />
+          <AlertDescription>
+            You don't have permission to view employees data. Please contact your administrator.
+          </AlertDescription>
+        </Alert>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
