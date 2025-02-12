@@ -244,13 +244,6 @@ export type Database = {
             referencedRelation: "organizations"
             referencedColumns: ["id"]
           },
-          {
-            foreignKeyName: "employees_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "user_management"
-            referencedColumns: ["id"]
-          },
         ]
       }
       organizations: {
@@ -747,36 +740,11 @@ export type Database = {
           updated_at?: string
           user_id?: string | null
         }
-        Relationships: [
-          {
-            foreignKeyName: "user_roles_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "user_management"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
     }
     Views: {
-      user_management: {
-        Row: {
-          email: string | null
-          id: string | null
-          is_admin: boolean | null
-        }
-        Insert: {
-          email?: string | null
-          id?: string | null
-          is_admin?: never
-        }
-        Update: {
-          email?: string | null
-          id?: string | null
-          is_admin?: never
-        }
-        Relationships: []
-      }
+      [_ in never]: never
     }
     Functions: {
       check_hr_admin_access: {
@@ -797,13 +765,21 @@ export type Database = {
         }
         Returns: boolean
       }
-      has_role: {
-        Args: {
-          user_id: string
-          role: Database["public"]["Enums"]["app_role"]
-        }
-        Returns: boolean
-      }
+      has_role:
+        | {
+            Args: {
+              user_id: string
+              role: Database["public"]["Enums"]["app_role"]
+            }
+            Returns: boolean
+          }
+        | {
+            Args: {
+              user_id: string
+              role_name: string
+            }
+            Returns: boolean
+          }
       toggle_admin_role: {
         Args: {
           target_user_id: string
