@@ -40,7 +40,7 @@ const App = () => (
             <Route
               path="/employees"
               element={
-                <ProtectedRoute requiredRole="HR">
+                <ProtectedRoute>
                   <Layout>
                     <EmployeesPage />
                   </Layout>
