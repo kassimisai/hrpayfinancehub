@@ -88,7 +88,7 @@ const TimeOffPage = () => {
     createTimeOffRequest.mutate(newRequest);
   };
 
-  const getFilteredRequests = (status?: TimeOffRequest['status']) => {
+  const getFilteredRequests = (status?: TimeOffRequest['status'] | 'all') => {
     if (!timeOffRequests) return [];
     if (!status || status === 'all') return timeOffRequests;
     return timeOffRequests.filter(request => request.status === status);
