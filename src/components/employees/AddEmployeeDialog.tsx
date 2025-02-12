@@ -58,7 +58,17 @@ export function AddEmployeeDialog() {
     try {
       const { error } = await supabase
         .from('employees')
-        .insert([data]);
+        .insert({
+          first_name: data.first_name,
+          last_name: data.last_name,
+          email: data.email,
+          phone: data.phone || null,
+          job_title: data.job_title,
+          department_id: data.department_id || null,
+          employment_status: data.employment_status,
+          employee_type: data.employee_type,
+          hire_date: data.hire_date,
+        });
 
       if (error) throw error;
 
