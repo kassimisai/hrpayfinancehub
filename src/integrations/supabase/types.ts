@@ -754,12 +754,6 @@ export type Database = {
       }
     }
     Functions: {
-      check_employee_access: {
-        Args: {
-          lookup_user_id: string
-        }
-        Returns: boolean
-      }
       check_hr_admin_access: {
         Args: Record<PropertyKey, never>
         Returns: boolean

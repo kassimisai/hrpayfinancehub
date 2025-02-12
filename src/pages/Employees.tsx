@@ -40,7 +40,7 @@ const getStatusColor = (status: string): BadgeProps["variant"] => {
 const EmployeesPage = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const { toast } = useToast();
-  const { user, userRole } = useAuth();
+  const { user, userRole, signOut } = useAuth();
 
   const { data: employees, isLoading, error } = useQuery({
     queryKey: ['employees', userRole],
@@ -51,30 +51,38 @@ const EmployeesPage = () => {
         throw new Error('You must be logged in to view employees data');
       }
 
-      const { data, error } = await supabase
-        .from('employees')
-        .select(`
-          *,
-          departments (
-            name
-          )
-        `);
+      try {
+        const { data, error } = await supabase
+          .from('employees')
+          .select(`
+            *,
+            departments (
+              name
+            )
+          `);
 
-      if (error) {
-        console.error('Error fetching employees:', error);
-        if (error.code === 'PGRST116') {
-          throw new Error('You don\'t have permission to view employees data');
+        if (error) {
+          console.error('Error fetching employees:', error);
+          if (error.message?.includes('refresh_token_not_found')) {
+            await signOut();
+            throw new Error('Your session has expired. Please sign in again.');
+          }
+          if (error.code === 'PGRST116') {
+            throw new Error('You don\'t have permission to view employees data');
+          }
+          throw new Error(error.message);
         }
-        throw new Error(error.message);
-      }
 
-      if (!data) {
-        return [];
+        return data || [];
+      } catch (error: any) {
+        if (error.message?.includes('refresh_token_not_found')) {
+          await signOut();
+          throw new Error('Your session has expired. Please sign in again.');
+        }
+        throw error;
       }
-
-      return data as (Employee & { departments: { name: string } | null })[];
     },
-    enabled: !!user, // Only run query if user is logged in
+    enabled: !!user,
   });
 
   const filteredEmployees = employees?.filter((employee) => {
