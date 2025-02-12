@@ -57,7 +57,7 @@ const EmployeesPage = () => {
 
       if (error) {
         console.error('Error fetching employees:', error);
-        throw error;
+        throw new Error('You don\'t have permission to view employees data');
       }
 
       return data as (Employee & { departments: { name: string } | null })[];
@@ -80,12 +80,14 @@ const EmployeesPage = () => {
         <Alert variant="destructive">
           <AlertTriangle className="h-4 w-4" />
           <AlertDescription>
-            You don't have permission to view employees data. Please contact your administrator.
+            {error instanceof Error ? error.message : 'An error occurred while fetching employees data'}
           </AlertDescription>
         </Alert>
       </div>
     );
   }
+
+  const canAddEmployee = userRole === 'HR' || userRole === 'ADMIN';
 
   return (
     <div className="space-y-6">
@@ -94,7 +96,7 @@ const EmployeesPage = () => {
           <h1 className="text-2xl font-semibold text-secondary">Employees</h1>
           <p className="text-muted-foreground">Manage your organization's employees</p>
         </div>
-        <AddEmployeeDialog />
+        {canAddEmployee && <AddEmployeeDialog />}
       </div>
 
       <div className="flex gap-4 items-center">
