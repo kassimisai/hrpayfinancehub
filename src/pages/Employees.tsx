@@ -1,19 +1,77 @@
 
 import { useState } from "react";
-import { Users, UserPlus, Search, Filter } from "lucide-react";
+import { Users, UserPlus, Search, Filter, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useToast } from "@/hooks/use-toast";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import type { Employee } from "@/types/employee";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  Badge,
+  BadgeProps,
+} from "@/components/ui/badge";
 
-const employees = [
-  { id: 1, name: "Sarah Johnson", role: "Senior Developer", department: "Engineering", status: "Active", email: "sarah.j@company.com", joinDate: "Jan 15, 2023" },
-  { id: 2, name: "Michael Chen", role: "Product Manager", department: "Product", status: "Active", email: "michael.c@company.com", joinDate: "Mar 3, 2023" },
-  { id: 3, name: "Emily Davis", role: "UX Designer", department: "Design", status: "Active", email: "emily.d@company.com", joinDate: "Apr 22, 2023" },
-  // Add more employee data as needed
-];
+const getStatusColor = (status: string): BadgeProps["variant"] => {
+  switch (status) {
+    case 'ACTIVE':
+      return "success";
+    case 'INACTIVE':
+      return "destructive";
+    case 'ON_LEAVE':
+      return "warning";
+    default:
+      return "default";
+  }
+};
 
 const EmployeesPage = () => {
   const [searchQuery, setSearchQuery] = useState("");
+  const { toast } = useToast();
+
+  const { data: employees, isLoading } = useQuery({
+    queryKey: ['employees'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('employees')
+        .select(`
+          *,
+          departments (
+            name
+          )
+        `);
+
+      if (error) {
+        toast({
+          title: "Error fetching employees",
+          description: error.message,
+          variant: "destructive",
+        });
+        throw error;
+      }
+
+      return data as (Employee & { departments: { name: string } | null })[];
+    },
+  });
+
+  const filteredEmployees = employees?.filter((employee) => {
+    const searchTerm = searchQuery.toLowerCase();
+    return (
+      employee.first_name.toLowerCase().includes(searchTerm) ||
+      employee.last_name.toLowerCase().includes(searchTerm) ||
+      employee.email.toLowerCase().includes(searchTerm) ||
+      employee.job_title.toLowerCase().includes(searchTerm)
+    );
+  });
 
   return (
     <div className="space-y-6">
@@ -45,36 +103,42 @@ const EmployeesPage = () => {
       </div>
 
       <ScrollArea className="h-[calc(100vh-280px)]">
-        <div className="rounded-lg border">
-          <table className="w-full">
-            <thead className="bg-muted text-secondary">
-              <tr>
-                <th className="text-left p-4">Name</th>
-                <th className="text-left p-4">Role</th>
-                <th className="text-left p-4">Department</th>
-                <th className="text-left p-4">Status</th>
-                <th className="text-left p-4">Email</th>
-                <th className="text-left p-4">Join Date</th>
-              </tr>
-            </thead>
-            <tbody>
-              {employees.map((employee) => (
-                <tr key={employee.id} className="border-t hover:bg-muted/50">
-                  <td className="p-4">{employee.name}</td>
-                  <td className="p-4">{employee.role}</td>
-                  <td className="p-4">{employee.department}</td>
-                  <td className="p-4">
-                    <span className="px-2 py-1 rounded-full bg-primary/10 text-primary text-sm">
-                      {employee.status}
-                    </span>
-                  </td>
-                  <td className="p-4">{employee.email}</td>
-                  <td className="p-4">{employee.joinDate}</td>
-                </tr>
+        {isLoading ? (
+          <div className="flex items-center justify-center h-32">
+            <Loader2 className="h-8 w-8 animate-spin" />
+          </div>
+        ) : (
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Name</TableHead>
+                <TableHead>Job Title</TableHead>
+                <TableHead>Department</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Email</TableHead>
+                <TableHead>Hire Date</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {filteredEmployees?.map((employee) => (
+                <TableRow key={employee.id}>
+                  <TableCell>
+                    {employee.first_name} {employee.last_name}
+                  </TableCell>
+                  <TableCell>{employee.job_title}</TableCell>
+                  <TableCell>{employee.departments?.name || 'N/A'}</TableCell>
+                  <TableCell>
+                    <Badge variant={getStatusColor(employee.employment_status)}>
+                      {employee.employment_status}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>{employee.email}</TableCell>
+                  <TableCell>{new Date(employee.hire_date).toLocaleDateString()}</TableCell>
+                </TableRow>
               ))}
-            </tbody>
-          </table>
-        </div>
+            </TableBody>
+          </Table>
+        )}
       </ScrollArea>
     </div>
   );
