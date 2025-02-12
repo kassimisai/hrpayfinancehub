@@ -744,7 +744,14 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      user_management: {
+        Row: {
+          email: string | null
+          id: string | null
+          is_admin: boolean | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       check_hr_admin_access: {

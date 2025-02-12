@@ -25,8 +25,7 @@ export function SecuritySettings() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('user_management')
-        .select('*')
-        .order('email');
+        .select('*');
       
       if (error) throw error;
       return data as UserManagement[];
