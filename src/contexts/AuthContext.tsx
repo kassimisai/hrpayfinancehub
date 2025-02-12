@@ -130,14 +130,35 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const signOut = async () => {
     try {
       const { error } = await supabase.auth.signOut();
-      if (error) throw error;
+      // Even if we get a session_not_found error, we want to clear the local state
+      setUser(null);
+      setUserRole(null);
+      setPermissions([]);
       navigate("/auth");
+      
+      // Only show error toast for non-session-related errors
+      if (error && !error.message.includes('session_not_found')) {
+        toast({
+          title: "Error",
+          description: error.message,
+          variant: "destructive",
+        });
+      }
     } catch (error: any) {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      });
+      // Clear local state even if there's an error
+      setUser(null);
+      setUserRole(null);
+      setPermissions([]);
+      navigate("/auth");
+      
+      // Only show error toast for non-session-related errors
+      if (!error.message.includes('session_not_found')) {
+        toast({
+          title: "Error",
+          description: error.message,
+          variant: "destructive",
+        });
+      }
     }
   };
 
