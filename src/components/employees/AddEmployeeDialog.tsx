@@ -26,6 +26,7 @@ import { UserPlus } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
+import { useAuth } from "@/contexts/AuthContext";
 
 const employeeSchema = z.object({
   first_name: z.string().min(2, "First name must be at least 2 characters"),
@@ -45,6 +46,7 @@ export function AddEmployeeDialog() {
   const [open, setOpen] = useState(false);
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const { user } = useAuth();
 
   const form = useForm<EmployeeFormValues>({
     resolver: zodResolver(employeeSchema),
@@ -57,7 +59,32 @@ export function AddEmployeeDialog() {
 
   const onSubmit = async (data: EmployeeFormValues) => {
     try {
-      // First, check if email already exists using maybeSingle() instead of single()
+      // First check if the current user has HR permissions
+      const { data: hasHRPerms, error: permsError } = await supabase
+        .rpc('has_hr_permissions', {
+          lookup_user_id: user?.id
+        });
+
+      if (permsError) {
+        console.error('Error checking HR permissions:', permsError);
+        toast({
+          title: "Error",
+          description: "Failed to verify permissions",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      if (!hasHRPerms) {
+        toast({
+          title: "Access Denied",
+          description: "You need HR permissions to add employees",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Check if email already exists
       const { data: existingEmployee, error: checkError } = await supabase
         .from('employees')
         .select('id')
