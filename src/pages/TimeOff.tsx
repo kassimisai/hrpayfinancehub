@@ -22,7 +22,7 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import type { TimeOffRequest } from "@/types/timeOff";
+import type { TimeOffRequest, NewTimeOffRequest } from "@/types/timeOff";
 import { format } from "date-fns";
 
 const TimeOffPage = () => {
@@ -46,7 +46,7 @@ const TimeOffPage = () => {
 
   // Create time off request mutation
   const createTimeOffRequest = useMutation({
-    mutationFn: async (newRequest: Partial<TimeOffRequest>) => {
+    mutationFn: async (newRequest: NewTimeOffRequest) => {
       const { data, error } = await supabase
         .from('time_off_requests')
         .insert(newRequest)
@@ -78,7 +78,7 @@ const TimeOffPage = () => {
     const form = e.currentTarget;
     const formData = new FormData(form);
     
-    const newRequest = {
+    const newRequest: NewTimeOffRequest = {
       start_date: formData.get('startDate') as string,
       end_date: formData.get('endDate') as string,
       request_type: formData.get('type') as string,

@@ -13,3 +13,10 @@ export interface TimeOffRequest {
   created_at?: string;
   updated_at?: string;
 }
+
+export interface NewTimeOffRequest {
+  start_date: string;
+  end_date: string;
+  request_type: string;
+  reason?: string;
+}
